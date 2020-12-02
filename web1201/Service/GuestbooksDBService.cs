@@ -83,5 +83,117 @@ namespace web1201.Service
             }
         }
 
+        public Guestbooks GetDataById(int Id)
+        {
+            Guestbooks Data = new Guestbooks();
+
+            string sql  =  $@"select * from Guestbooks where Id ={Id}";
+
+            try
+            {
+                //
+                conn.Open();
+
+                SqlCommand cmd = new SqlCommand(sql, conn);
+
+                SqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                Data.Id = Convert.ToInt32(dr["Id"]);
+                Data.Name = dr["Name"].ToString();
+                Data.Content =  dr["Content"].ToString();
+                Data.CreateTime = Convert.ToDateTime(dr["CreateTime"]);
+                if (!string.IsNullOrWhiteSpace(dr["Reply"].ToString()))
+                {
+                    Data.Reply=  dr["Reply"].ToString();
+                    Data.ReplyTime = Convert.ToDateTime(dr["ReplyTime"]);
+
+                }
+            }
+            catch (Exception)
+            {
+                Data = null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return Data;
+        }
+
+        public void UpdateGuestbooks(Guestbooks UpdateData)
+        {
+            //sql
+            string sql  = $@"UPDATE Guestbooks SET Name = '{UpdateData.Name}',Content = '{UpdateData.Content}' Where Id ={UpdateData.Id}";
+            //
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        public void ReplyGuestbooks(Guestbooks ReplyData)
+        {
+            //sql command
+            string  sql = $@"UPDate Guestbooks set Reply ='{ReplyData.Reply}', ReplyTime = '{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}' Where Id ={ReplyData.Id}";
+
+            try
+            {
+                conn.Open();
+                SqlCommand cmd=  new SqlCommand(sql,conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+        public bool CheckUpdate(int Id)
+        {
+            Guestbooks data =  GetDataById(Id);
+
+            return (data != null && data.ReplyTime ==null);
+        }
+
+
+        //刪除資料
+        public void DeleteGuestbooks(int Id)
+        {
+            string sql = $@"delete from Guestbooks where Id ={Id}";
+
+            try
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql,conn);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+
+
+        }
+
+
     }
 }

@@ -38,6 +38,61 @@ namespace web1201.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult Edit(int Id)
+        {
+            Guestbooks data =  GuestbookService.GetDataById(Id);
+            return View(data);
+
+        }
+        [HttpPost]
+        public ActionResult Edit(int Id, [Bind(Include ="Name,Content")] Guestbooks UpdateData)
+        {
+            if (GuestbookService.CheckUpdate(Id))
+            {
+                UpdateData.Id =Id;
+                GuestbookService.UpdateGuestbooks(UpdateData);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+
+                return RedirectToAction("Index");
+            }
+
+
+        }
+
+        public ActionResult Reply(int Id)
+        {
+            Guestbooks Data = GuestbookService.GetDataById(Id);
+            return View(Data);
+        }
+        [HttpPost]
+        public ActionResult Reply(int Id, [Bind(Include ="Reply, ReplyTime")] Guestbooks ReplyData)
+        {
+            if (GuestbookService.CheckUpdate(Id))
+            {
+                //將編號設定回復至留言資料中
+                ReplyData.Id=Id;
+                //使用Service來回覆資料
+                GuestbookService.ReplyGuestbooks(ReplyData);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return RedirectToAction("Index");
+            }
+        }
+
+
+        public ActionResult Delete(int Id)
+        {
+            GuestbookService.DeleteGuestbooks(Id);
+            return RedirectToAction("Index");
+
+
+        }
+
 
     }
 }

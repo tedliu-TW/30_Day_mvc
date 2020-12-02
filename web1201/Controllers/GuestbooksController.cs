@@ -28,7 +28,8 @@ namespace web1201.Controllers
         //新增留言
         public ActionResult Create()
         {
-            return PartialView();
+            var vm =new Guestbooks();
+            return PartialView(vm);
         }
         [HttpPost]
         public ActionResult Create([Bind(Include ="Name,Content")]Guestbooks Data)

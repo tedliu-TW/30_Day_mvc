@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -8,19 +7,23 @@ using web1201.Models;
 
 namespace web1201.Service
 {
-    public class GuestbooksDBService
+	public class GuestbooksDBService : BaseService
     {
-        //建立與資料庫的連線字串
-        private readonly static string cnstr = ConfigurationManager.ConnectionStrings["MVC"].ConnectionString;
         //建立與資料的連線
-        private readonly SqlConnection conn = new SqlConnection(cnstr);
+        private readonly SqlConnection conn;
+        protected override string tableName => "Guestbooks";
+
+        public GuestbooksDBService():base()
+        {
+	        conn = new SqlConnection(cnstr);
+        }
 
         //取得鄭烈資料方式
         public List<Guestbooks> GetDataList()
         {
             List<Guestbooks> DataList = new List<Guestbooks>();
             //sql語法
-            string sql = @"select * from Guestbooks";
+            string sql = $@"select * from {tableName}";
             try
             {
                 //開啟資料庫連線
@@ -63,7 +66,7 @@ namespace web1201.Service
         public void InsertGuestbooks(Guestbooks newData)
         {
             //sql新增語法
-            string sql = $@"Insert INTO Guestbooks(Name,Content,CreateTime) Values('{newData.Name}','{newData.Content}','{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}')";
+            string sql = $@"Insert INTO {tableName}(Name,Content,CreateTime) Values('{newData.Name}','{newData.Content}','{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}')";
             try
             {
                 //開啟資料庫連線
@@ -87,7 +90,7 @@ namespace web1201.Service
         {
             Guestbooks Data = new Guestbooks();
 
-            string sql  =  $@"select * from Guestbooks where Id ={Id}";
+            string sql  =  $@"select * from {tableName} where Id ={Id}";
 
             try
             {
@@ -124,7 +127,7 @@ namespace web1201.Service
         public void UpdateGuestbooks(Guestbooks UpdateData)
         {
             //sql
-            string sql  = $@"UPDATE Guestbooks SET Name = '{UpdateData.Name}',Content = '{UpdateData.Content}' Where Id ={UpdateData.Id}";
+            string sql  = $@"UPDATE {tableName} SET Name = '{UpdateData.Name}',Content = '{UpdateData.Content}' Where Id ={UpdateData.Id}";
             //
             try
             {
@@ -145,7 +148,7 @@ namespace web1201.Service
         public void ReplyGuestbooks(Guestbooks ReplyData)
         {
             //sql command
-            string  sql = $@"UPDate Guestbooks set Reply ='{ReplyData.Reply}', ReplyTime = '{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}' Where Id ={ReplyData.Id}";
+            string  sql = $@"UPDate {tableName} set Reply ='{ReplyData.Reply}', ReplyTime = '{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")}' Where Id ={ReplyData.Id}";
 
             try
             {
@@ -173,7 +176,7 @@ namespace web1201.Service
         //刪除資料
         public void DeleteGuestbooks(int Id)
         {
-            string sql = $@"delete from Guestbooks where Id ={Id}";
+            string sql = $@"delete from {tableName} where Id ={Id}";
 
             try
             {
